@@ -1,0 +1,80 @@
+/* 
+ * File:   main.cpp
+ * Author: Grace Kim
+ * Created on February 9, 2023, 3:02 AM
+ * Purpose: Text Version of "Sorry!"
+ */
+
+//System Libraries
+#include <iostream> //Input Output Library
+#include <iomanip>  //Formatting Library
+#include <cmath>    //Need the power function
+#include <cstdlib>  //Random Function Library
+#include <fstream>  //To get files
+#include <string>   //String Library
+#include <ctime>    //Time Library
+#include <algorithm>//Algorithm 
+using namespace std;
+
+//Function Prototypes 
+void welcome();                             //welcome function
+void Getname(int nplayer, string names[]); //getting player names
+
+//Execution begins here at main
+int main(int argc, char** argv) {
+    
+    //Declare Variables
+    fstream in ("input.txt"), out ("output.txt");//Input and Output file streams
+    
+    //welcome function 
+    welcome();
+    //player name function
+    int nplayer;
+    string names[4];
+    //Collect and validate player names
+    Getname(nplayer, names);
+    
+    //Exit the Program
+    in.close();
+    out.close();
+    return 0;
+}
+//welcome function
+void welcome() {
+    cout<<"WELCOME TO THE TEXT VERSION OF 'SORRY!'"<<endl;
+}
+//Player names function
+void Getname(int nplayer, string names[]) {
+    //Input the number of players
+    cout<<"Please enter the number of players: "<<endl;
+    cin>>nplayer;
+    //Validate the number of players
+    while (nplayer<2 || nplayer>4) {
+        cout<<"Sorry! The number of players must be 2 or more, or 4 or less."<<endl;
+        cout<<"Please enter the number of players: "<<endl;
+        cin>>nplayer;
+    }
+    //Input the names of the players
+    for (int i=0; i<nplayer; i++) {
+        cout<<"Enter player "<<i+1<<"'s name"<<endl;
+        cin>>names[i];
+    }
+    //Validate that players have unique names
+    bool diff=false; //all have different names
+    while (!diff) {  //have the same names
+        diff=true;
+        for (int i=0; i<nplayer-1; i++) {
+            for (int j=i+1; j<nplayer; j++) {
+                if (names[i]==names[j]) {
+                    cout<<"Players must have different names. Please enter different names for each player."<<endl;
+                    diff=false;
+                    for (int k=0; k<nplayer; k++) {
+                        cout<<"Enter player "<<k+1<<"'s name"<<endl;
+                        cin>>names[k];
+                    }
+                }
+            }
+        }
+    }
+}
+    
