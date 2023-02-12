@@ -1,0 +1,103 @@
+/* 
+ * File:   main.cpp
+ * Author: Grace Kim
+ * Created on February 9, 2023, 3:02 AM
+ * Purpose: Text Version of "Sorry!"
+ */
+
+//System Libraries
+#include <iostream> //Input Output Library
+#include <iomanip>  //Formatting Library
+#include <cmath>    //Need the power function
+#include <cstdlib>  //Random Function Library
+#include <fstream>  //To get files
+#include <string>   //String Library
+#include <ctime>    //Time Library
+#include <algorithm>//Algorithm 
+using namespace std;
+
+//Function Prototypes 
+void welcome();                             //welcome function
+void Getname(int nplayer, string names[]); //getting player names
+
+//Execution begins here at main
+int main(int argc, char** argv) {
+    
+    //Initialize random seed
+    srand(time(0));
+    
+    //Declare Variables
+    fstream in ("input.txt"), out ("output.txt");//Input and Output file streams
+    
+    //welcome function 
+    welcome();
+    //player name function
+    int nplayer;
+    string names[4];
+    //Collect and validate player names
+    Getname(nplayer, names);
+    //Order of turns
+    int option;
+    string p1, p2, p3, p4;
+    cout<<"Please enter the names of the players: "<<endl;
+    cin>>p1>>p2>>p3>>p4;
+    cout<<"Please confirm and enter the number of players to see who goes first."<<endl;
+    cin >> option;
+    int numps=min(option, 4);  //the number of players should not be greater than 4
+    string players[4] = {p1, p2, p3, p4};  //store the player names in an array
+    int cards[4];  // store the cards in an array
+    cout<<"Every player takes turns flipping a card to see who goes first." <<endl;
+    for (int i=0; i<numps; i++) {
+        cards[i]=rand()%13+1;  // generate a random card for each player
+        cout<<players[i] << "'s card is "<<cards[i]<<endl;
+    }
+    sort(cards, cards + numps, greater<int>());  // sort the cards in descending order
+    cout<<"The order of turns will be followed by: "<<endl;
+    for (int i=0; i<numps; i++) {
+        cout<<players[i]<<endl;
+        cout<<endl;
+        cout<<"Let the game begin! Good luck to all players."<<endl;
+    }
+    //Exit the Program
+    in.close();
+    out.close();
+    return 0;
+}
+//welcome function
+void welcome() {
+    cout<<"WELCOME TO THE TEXT VERSION OF 'SORRY!'"<<endl;
+}
+//Player names function
+void Getname(int nplayer, string names[]) {
+    //Input the number of players
+    cout<<"Please enter the number of players: "<<endl;
+    cin>>nplayer;
+    //Validate the number of players
+    while (nplayer<2 || nplayer>4) {
+        cout<<"Sorry! The number of players must be 2 or more, or 4 or less."<<endl;
+        cout<<"Please enter the number of players: "<<endl;
+        cin>>nplayer;
+    }
+    //Input the names of the players
+    for (int i=0; i<nplayer; i++) {
+        cout<<"Enter player "<<i+1<<"'s name"<<endl;
+        cin>>names[i];
+    }
+    //Validate that players have unique names
+    bool diff=false; //all have different names
+    while (!diff) {  //have the same names
+        diff=true;
+        for (int i=0; i<nplayer-1; i++) {
+            for (int j=i+1; j<nplayer; j++) {
+                if (names[i]==names[j]) {
+                    cout<<"Players must have different names. Please enter different names for each player."<<endl;
+                    diff=false;
+                    for (int k=0; k<nplayer; k++) {
+                        cout<<"Enter player "<<k+1<<"'s name"<<endl;
+                        cin>>names[k];
+                    }
+                }
+            }
+        }
+    }
+}
