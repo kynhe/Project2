@@ -1,0 +1,254 @@
+/* 
+ * File:   main.cpp
+ * Author: Grace Kim
+ * Created on February 2, 2023, 2:26 AM
+ * Purpose: Text Version of "Sorry!"
+ */
+
+//System Libraries
+#include <iostream> //Input Output Library
+#include <iomanip>  //Formatting Library
+#include <cmath>    //Need the power function
+#include <cstdlib>  //Random Function Library
+#include <fstream>  //To get files
+#include <string>   //String Library
+#include <ctime>    //Time Library
+#include <algorithm>//Algorithm 
+using namespace std;
+
+//welcome function
+void welcome();         
+//instructions
+void rules();
+//getting player names
+void Getname(int nplayer, string names[]);
+//getting number of players
+int gnump();
+//getting a random card
+int getcard(); 
+//play the game with inputted number of players
+void play(int number); 
+//the board 
+void boards();
+//win or not
+bool won; 
+//wallet
+int wallet();
+//calculate
+int calculate(int wallet);
+//with wallet
+void playGame(int numPlayers);
+//rate
+void rate();
+//thanks
+void thanks();
+//Execution begins here at main
+int main(int argc, char** argv) {
+    
+    //Declare Variables
+    fstream in ("input.txt"), out ("output.txt");//Input and Output file streams
+    //welcome function 
+    welcome();
+    //rules
+    rules();
+    //player name function
+    int nplayer;
+    string names[4];
+    //Collect and validate player names
+    Getname(nplayer, names);
+    //turns
+    srand(time(0));
+    int number= gnump();
+    play(number);
+
+    //pay up 
+    wallet();
+    //rate
+    rate();
+    //thank 
+    thanks();
+    //Exit the Program
+    in.close();
+    out.close();
+    return 0;
+}
+//welcome function
+void welcome() {
+    cout<<"WELCOME TO THE TEXT VERSION OF 'SORRY!'"<<endl;
+}
+//rules
+void rules() {
+    cout<<"The rules for the text version of 'Sorry!' is quite simple."<<endl;
+    cout<<"Players must input the number of players they have."<<endl;
+    cout<<"Then, they must input all the names of the players."<<endl;
+    cout<<"Players cannot have the same name"<<endl;
+    cout<<"Then player pick a random card and decide who goes first"<<endl;
+    cout<<"This all depends on who has the highest card number"<<endl;
+    cout<<"Players play on a board of 50 spaces and whoever finishes"<<endl;
+    cout<<"the game first wins"<<endl;
+    cout<<"The winner is then award with money that the losers owe them"<<endl;
+    cout<<"That's not all...sorry! Losers pay whatever they have in their wallets"<<endl;
+    cout<<"multiplied by itself."<<endl;
+    cout<<"They then have to have it bank transferred to the winners account."<<endl;
+    cout<<"Good luck players!"<<endl;
+}
+//Player names function
+void Getname(int nplayer, string names[]) {
+    //Input the number of players
+    cout<<"Please enter the number of players: "<<endl;
+    cin>>nplayer;
+    //Validate the number of players
+    while (nplayer<2 || nplayer>4) {
+        cout<<"Sorry! The number of players must be 2 or more, or 4 or less."<<endl;
+        cout<<"Please enter the number of players: "<<endl;
+        cin>>nplayer;
+    }
+    //Input the names of the players
+    for (int i=0; i<nplayer; i++) {
+        cout<<"Enter player "<<i+1<<"'s name"<<endl;
+        cin>>names[i];
+    }
+    //Validate that players have unique names
+    bool diff=false; //all have different names
+    while (!diff) {  //have the same names
+        diff=true;
+        for (int i=0; i<nplayer-1; i++) {
+            for (int j=i+1; j<nplayer; j++) {
+                if (names[i]==names[j]) {
+                    cout<<"Players must have different names. Please enter different names for each player."<<endl;
+                    diff=false;
+                    for (int k=0; k<nplayer; k++) {
+                        cout<<"Enter player "<<k+1<<"'s name"<<endl;
+                        cin>>names[k];
+                    }
+                }
+            }
+        }
+    }
+}
+    //turns
+    const int minplay = 2; //minimum amount of players
+    const int maxplay = 4; //maximum amount of players
+    const int board = 50;  //board size
+    const int mincard = 1;  //minimum card spaces
+    const int maxcard = 10;  //maximum card spaces
+    int gnump() {
+    int number; //number of players
+    cout<<"Enter the number of players (2-4): ";
+    cin>>number;
+    while (number<minplay||number>maxplay) {
+        cout<<"Invalid number of players. Please enter a number between "<<minplay<<" and "<<maxplay<<": ";
+        cin>>number;
+    }
+    return number;
+    }
+
+    int getcard() {
+    return mincard+rand()%(maxcard+1-mincard);
+    }
+
+    void play(int number) {
+    int pos[maxplay] = {0}; //positions of players
+    string name[maxplay];
+    for (int i=0; i<number; i++) {
+        cout<<"Enter the name of player " << (i + 1) << ": ";
+        cin>>name[i];
+    }
+    bool won=false; //player does not win 
+    while (!won) {
+        for (int i=0; i<number; i++) {
+            cout<<name[i]<<" drew a card and moved "<<getcard()<<" spaces forward."<<endl;
+            pos[i]+=getcard();
+            if (pos[i]>= board) {
+                cout<<name[i]<<" has won the game!"<<endl;
+                won=true; //player wins
+                break;
+            }
+        }
+    }
+}
+    //wallet
+    int wallet() {
+    int wallet;
+    cout<<"Enter the amount of money in your wallet: ";
+    cin>>wallet;
+    return wallet;
+}
+    //calculate
+    int calculate(int wallet) {
+    return wallet * wallet;
+}
+    //with wallet
+    void playGame(int numPlayers) {
+    int playerPositions[maxplay] = {0};
+    string n[maxplay]; //player names
+    vector<int>playerWallets(numPlayers);
+    for (int i=0; i<numPlayers; i++) {
+        cout<<"Enter the name of player " << (i + 1) << ": ";
+        cin>>n[i];
+        playerWallets[i]=wallet();
+    }
+    int winner=-1;
+    for (int i=0; i<numPlayers; i++) {
+        cout<<n[i] << " drew a card and moved "<<getcard()<< " spaces forward."<<endl;
+        playerPositions[i]+=getcard();
+        if (playerPositions[i]>=board) {
+            cout<<n[i]<<" has won the game!"<< endl;
+            winner=i;
+            break;
+        }
+    }
+    if (winner !=-1) {
+        cout <<n[winner]<<" won and is owed the following amounts:"<<endl;
+        int total=0;
+        for (int i=0; i<numPlayers; i++) {
+            if (i !=winner) {
+                int owed=calculate(playerWallets[i]);
+                cout<<n[i]<<" owes "<<n[winner]<<" $"<<owed<< endl;
+                total+=owed;
+            }
+        }
+        cout<<"Total amount owed to " <<n[winner]<<": $"<<total<<endl;
+    }
+}
+    //the board
+    void boards() {
+    const int size = 50;
+    int board[size][size][size];
+    for (int i=0; i<size; i++) {
+    for (int j=0; j<size; j++) {
+        for (int k=0; k<size; k++) {
+            board[i][j][k]=0;
+        }
+    }
+}
+    } 
+    void rate() {
+        int number;
+        cout<<"Thank you for playing. On a scale of "<<endl;
+    int i=1;
+    do {
+        cout<<i<<endl;
+        i++;
+    }
+    while (i<=10);
+    cout<<"how much did you enjoy the game?"<<endl;
+    cout<<"A rating of 1-4 is horrendous."<<endl;
+    cout<<"A rating of 5-7 is average."<<endl;
+    cout<<"A rating of 8-10 is excellent."<<endl;
+    cin>>number; 
+    cout<<endl;
+    bool excel=(number>=8);
+    cout<<(excel ? "You rated the game as excellent!" : "You rated the game as horrendous or just average.")<<endl;
+    
+    }
+    //thanks
+    void thanks() {
+    cout << "#################################################################" << endl;
+    cout << "#                                                               #" << endl;
+    cout << "#                                                               #" << endl;
+    cout << "#    Thank You for Playing!!!                                   #" << endl;
+    cout << "#                                                               #" << endl;
+    cout << "#                                                               #" << endl;
+    cout << "#################################################################" << endl;
+}
