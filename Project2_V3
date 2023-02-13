@@ -1,0 +1,128 @@
+/* 
+ * File:   main.cpp
+ * Author: Grace Kim
+ * Created on February 2, 2023, 2:26 AM
+ * Purpose: Text Version of "Sorry!"
+ */
+
+//System Libraries
+#include <iostream> //Input Output Library
+#include <iomanip>  //Formatting Library
+#include <cmath>    //Need the power function
+#include <cstdlib>  //Random Function Library
+#include <fstream>  //To get files
+#include <string>   //String Library
+#include <ctime>    //Time Library
+#include <algorithm>//Algorithm 
+using namespace std;
+
+//Function Prototypes 
+void welcome();                             //welcome function
+void Getname(int nplayer, string names[]); //getting player names
+int gnump();//getting number of players
+int getcard(); //getting a random card
+void play(int numPlayers); //playing the actual game
+bool won;  //win or not 
+//Execution begins here at main
+int main(int argc, char** argv) {
+    
+    //Declare Variables
+    fstream in ("input.txt"), out ("output.txt");//Input and Output file streams
+    
+    //welcome function 
+    welcome();
+    //player name function
+    int nplayer;
+    string names[4];
+    //Collect and validate player names
+    Getname(nplayer, names);
+    //turns
+    srand(time(0));
+    int numPlayers = gnump();
+    play(numPlayers);
+    
+    
+    //Exit the Program
+    in.close();
+    out.close();
+    return 0;
+}
+//welcome function
+void welcome() {
+    cout<<"WELCOME TO THE TEXT VERSION OF 'SORRY!'"<<endl;
+}
+//Player names function
+void Getname(int nplayer, string names[]) {
+    //Input the number of players
+    cout<<"Please enter the number of players: "<<endl;
+    cin>>nplayer;
+    //Validate the number of players
+    while (nplayer<2 || nplayer>4) {
+        cout<<"Sorry! The number of players must be 2 or more, or 4 or less."<<endl;
+        cout<<"Please enter the number of players: "<<endl;
+        cin>>nplayer;
+    }
+    //Input the names of the players
+    for (int i=0; i<nplayer; i++) {
+        cout<<"Enter player "<<i+1<<"'s name"<<endl;
+        cin>>names[i];
+    }
+    //Validate that players have unique names
+    bool diff=false; //all have different names
+    while (!diff) {  //have the same names
+        diff=true;
+        for (int i=0; i<nplayer-1; i++) {
+            for (int j=i+1; j<nplayer; j++) {
+                if (names[i]==names[j]) {
+                    cout<<"Players must have different names. Please enter different names for each player."<<endl;
+                    diff=false;
+                    for (int k=0; k<nplayer; k++) {
+                        cout<<"Enter player "<<k+1<<"'s name"<<endl;
+                        cin>>names[k];
+                    }
+                }
+            }
+        }
+    }
+}
+    //turns
+    const int minplay = 2; //minimum amount of players
+    const int maxplay = 4; //maximum amount of players
+    const int board = 50;  //board size
+    const int mincard = 1;  //minimum card spaces
+    const int maxcard = 10;  //maximum card spaces
+    int gnump() {
+    int numPlayers;
+    cout<<"Enter the number of players (2-4): ";
+    cin>>numPlayers;
+    while (numPlayers<minplay||numPlayers>maxplay) {
+        cout<<"Invalid number of players. Please enter a number between "<<minplay<<" and "<<maxplay<<": ";
+        cin>>numPlayers;
+    }
+    return numPlayers;
+    }
+
+    int getcard() {
+    return mincard+rand()% (maxcard+1-mincard);
+    }
+
+    void play(int numPlayers) {
+    int pos[maxplay] = {0}; //positions of players
+    string name[maxplay];
+    for (int i=0; i< numPlayers; i++) {
+        cout<<"Enter the name of player "<<(i + 1)<<": ";
+        cin>>name[i];
+    }
+    bool won=false;
+    while (!won) {
+        for (int i=0; i<numPlayers; i++) {
+            cout<<name[i]<<" drew a card and moved "<<getcard()<<" spaces forward."<< endl;
+            pos[i]+=getcard();
+            if (pos[i]>=board) {
+                cout<<name[i] << " has won the game!"<< endl;
+                won=true;
+                break;
+            }
+        }
+    }
+}
